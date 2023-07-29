@@ -19,8 +19,7 @@ class ImageGallery extends Component {
     const { page } = this.state;
 
     if (prevProps.imageName !== imageName) {
-      console.log('prevState.imageName:', prevState.page);
-      console.log('this.State.imageName:', this.page);
+      
       this.setState({
         response: [],
       });
