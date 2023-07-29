@@ -1,24 +1,32 @@
 import React, { Component } from 'react';
+// import { toast } from 'react-toastify';
+import css from './Searchbar.module.css';
 
 class Searchbar extends Component {
   state = {
-    search: '',
+    imageName: '',
   };
 
   handleSearchChange = e => {
-    this.setState({ search: e.currentTarget.value.toLowerCase() });
+    this.setState({ imageName: e.currentTarget.value.toLowerCase() });
   };
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.search);
-    this.setState({ search: '' });
+
+    if (this.state.imageName.trim() === '') {
+      alert('Enter the name you are looking for');
+      // toast.warn('Enter the name you are looking for');
+      return;
+    }
+    this.props.onSubmit(this.state.imageName);
+    this.setState({ imageName: '' });
   };
 
   render() {
     return (
       <>
-        <header className="searchbar">
+        <header className={css.searchbar}>
           <form className="form" onSubmit={this.handleSubmit}>
             <button type="submit" className="button">
               <span className="button-label">Search</span>
@@ -26,9 +34,9 @@ class Searchbar extends Component {
 
             <input
               className="input"
-              name="search"
+              name="name"
               type="text"
-              value={this.state.search}
+              value={this.state.imageName}
               onChange={this.handleSearchChange}
               // autocomplete="off"
               // autofocus

@@ -1,31 +1,36 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
+// import { ToastContainer } from 'react-toastify';
 import Searchbar from './Searchbar/Searchbar';
+import ImageGallery from './ImageGallery/ImageGallery';
+import css from './App.module.css';
 
 class App extends Component {
   state = {
-    search: '',
+    imageName: '',
   };
 
-  // componentDidMount() {
-  //   const API_KEY = '38270540-a530076f6446dfae15d3982e2';
-
-  //   fetch(
-  //     `https://pixabay.com/api/?q=cat&page=1&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-  //   )
-  //     .then(res => res.json())
-  //     .then(search => this.setState({ search }));
-  // }
-
-  handleSearchFormSubmit = search => {
-    this.setState({ search });
-    console.log(search);
+  handleSearchFormSubmit = imageName => {
+    this.setState({ imageName });
   };
 
   render() {
     return (
-      <>
+      <div className={css.app}>
         <Searchbar onSubmit={this.handleSearchFormSubmit} />
-      </>
+        <ImageGallery imageName={this.state.imageName} />
+        {/* <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        /> */}
+      </div>
     );
   }
 }
