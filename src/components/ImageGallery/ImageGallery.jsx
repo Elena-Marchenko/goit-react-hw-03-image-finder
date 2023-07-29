@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Button from '../Button/Button';
-// import apiIMG from '../../imgAPI';
+import apiIMG from '../../imgAPI';
 
 class ImageGallery extends Component {
   state = {
@@ -15,46 +15,49 @@ class ImageGallery extends Component {
   componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.imageName !== this.props.imageName) {
-      //   console.log('prevProps.imageName:', prevProps.imageName);
-      //   console.log('this.props.imageName:', this.props.imageName);
+    const { imageName, scroll } = this.props;
+    const { page } = this.state;
 
-      // const API_KEY = '38270540-a530076f6446dfae15d3982e2';
-      // this.setState({ loader: true });
-      // setTimeout(() => {
-      //   fetch(
-      //     `https://pixabay.com/api/?q=${this.props.imageName}&page=${this.state.page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      //   )
-      //     .then(res => res.json())
-      //     .then(imageName => this.setState({ imageName }))
-      //     .finally(() =>
-      //       this.setState({ loader: false, page: (this.page = +1) })
-      //     );
-      // }, 1000);
-
-      const API_KEY = '38270540-a530076f6446dfae15d3982e2';
-      this.setState({ status: 'pending' });
-
-      fetch(
-        `https://pixabay.com/api/?q=${this.props.imageName}&page=${this.state.page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-
-          return Promise.rejected(
-            new Error(`Not found ${this.props.imageName}`)
-          );
-        })
-        .then(response => this.setState({ response, status: 'resolved' }))
-        .catch(error => this.setState({ error, status: 'rejected' }));
+    if (prevProps.imageName !== imageName) {
+      console.log('prevState.imageName:', prevState.page);
+      console.log('this.State.imageName:', this.page);
+      this.setState({
+        response: [],
+      });
+      this.fetchImages();
+    }
+    if (prevState.page !== page) {
+      // console.log('update:', page);
+      this.fetchImages().then(scroll);
     }
   }
 
-  getImages = () => {};
+  fetchImages = () => {
+    const { imageName } = this.props;
+    const { page } = this.state;
+    const errorMessage = `Not found ${imageName} `;
 
+    return apiIMG
+      .fetchImg(imageName, page)
+      .then(res => {
+        if (res.hits.length === 0) {
+          return Promise.reject(new Error(errorMessage));
+        }
+        return this.setState(prevState => ({
+          response: [...prevState.response, ...res.hits],
+        }));
+      })
+      .catch(error => alert(error.message));
+  };
   //!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  scroll = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
   increasePage = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
@@ -62,31 +65,25 @@ class ImageGallery extends Component {
   };
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   render() {
-    // console.log('response', this.state.response);
-    // console.log(this.state.page);
-    const { response, error, page, status } = this.state;
+    const { page, response } = this.state;
+    const { hideLoader, imageName } = this.props;
 
-    if (status === 'idle') {
-      return <div></div>;
-    }
-    if (status === 'pending') {
-      return <div>Loadind...</div>;
-    }
-    if (status === 'rejected') {
-      return <h1>{error.message}</h1>;
-    }
-    if (status === 'resolved') {
-      return (
-        <>
-          <ul className="gallery">
-            {/* Якщо нема картинки то */}
-
-            <ImageGalleryItem imageName={response} page={page} />
+    return (
+      <>
+        <div>
+          <ul>
+            <ImageGalleryItem
+              response={response}
+              // largeImageURL={largeImageURL}
+              hideLoader={hideLoader}
+              imageName={imageName}
+              page={page}
+            />
           </ul>
-          <Button onClick={this.increasePage} />
-        </>
-      );
-    }
+        </div>
+        <Button onClick={this.increasePage} />
+      </>
+    );
   }
 }
 

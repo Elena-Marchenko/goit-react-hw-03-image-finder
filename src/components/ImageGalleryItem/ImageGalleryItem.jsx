@@ -1,12 +1,20 @@
 import React from 'react';
 
-const ImageGalleryItem = ({ imageName: { hits } }) => {
-  console.log(hits);
+const imageGalleryItem = ({ response }) => {
+  return response.map(res => {
+    const { id, webformatURL, tags, largeImageURL } = res;
 
-  return hits.map(hit => (
-    <li className="gallery-item" key={hit.id}>
-      <img src={hit.webformatURL} alt={hit.tags} width="300" />
-    </li>
-  ));
+    return (
+      <li key={id}>
+        <img src={webformatURL} alt={tags} data-big_image={largeImageURL} />
+      </li>
+    );
+  });
+
+  // return (
+  //   <li key={id}>
+  //     <img src={webformatURL} alt={tags} data-big_image={largeImageURL} />
+  //   </li>
+  // );
 };
-export default ImageGalleryItem;
+export default imageGalleryItem;
