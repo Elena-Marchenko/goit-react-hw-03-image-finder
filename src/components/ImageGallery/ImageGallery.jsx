@@ -7,7 +7,6 @@ class ImageGallery extends Component {
   state = {
     response: [],
     page: 1,
-    loader: false,
     error: null,
     status: 'idle',
   };
@@ -15,20 +14,20 @@ class ImageGallery extends Component {
   componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
-    const { imageName, scroll } = this.props;
+    const { imageName } = this.props;
     const { page } = this.state;
 
-    if (prevProps.imageName !== imageName) {
-      
-      this.setState({
-        response: [],
-      });
-      this.fetchImages();
-    }
-    if (prevState.page !== page) {
-      // console.log('update:', page);
-      this.fetchImages().then(scroll);
-    }
+    setTimeout(() => {
+      if (prevProps.imageName !== imageName) {
+        this.setState({
+          response: [],
+        });
+        this.fetchImages();
+      }
+      if (prevState.page !== page) {
+        this.fetchImages();
+      }
+    }, 500);
   }
 
   fetchImages = () => {
@@ -38,6 +37,7 @@ class ImageGallery extends Component {
 
     return apiIMG
       .fetchImg(imageName, page)
+
       .then(res => {
         if (res.hits.length === 0) {
           return Promise.reject(new Error(errorMessage));
@@ -46,16 +46,13 @@ class ImageGallery extends Component {
           response: [...prevState.response, ...res.hits],
         }));
       })
-      .catch(error => alert(error.message));
+
+      .catch(error => alert(error.message))
+      .finally(() => {
+        this.props.hideLoader();
+      });
   };
   //!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  scroll = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
 
   increasePage = () => {
     this.setState(prevState => ({
@@ -65,7 +62,7 @@ class ImageGallery extends Component {
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   render() {
     const { page, response } = this.state;
-    const { hideLoader, imageName } = this.props;
+    const { imageName } = this.props;
 
     return (
       <>
@@ -74,13 +71,14 @@ class ImageGallery extends Component {
             <ImageGalleryItem
               response={response}
               // largeImageURL={largeImageURL}
-              hideLoader={hideLoader}
+
               imageName={imageName}
               page={page}
             />
           </ul>
         </div>
-        <Button onClick={this.increasePage} />
+
+        {response.length !== 0 && <Button onClick={this.increasePage} />}
       </>
     );
   }
