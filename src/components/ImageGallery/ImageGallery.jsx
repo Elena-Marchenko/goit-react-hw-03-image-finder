@@ -2,6 +2,7 @@ import { Component } from 'react';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Button from '../Button/Button';
 import apiIMG from '../../imgAPI';
+import Modal from '../Modal/Modal';
 
 class ImageGallery extends Component {
   state = {
@@ -9,6 +10,7 @@ class ImageGallery extends Component {
     page: 1,
     error: null,
     status: 'idle',
+    showModal: false,
   };
 
   componentDidMount() {}
@@ -53,6 +55,11 @@ class ImageGallery extends Component {
       });
   };
   //!!!!!!!!!!!!!!!!!!!!!!!!!
+  toggleModal = () => {
+    this.setState(() => ({
+      showModal: false ? true : false,
+    }));
+  };
 
   increasePage = () => {
     this.setState(prevState => ({
@@ -61,14 +68,21 @@ class ImageGallery extends Component {
   };
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   render() {
-    const { page, response } = this.state;
+    console.log(this.toggleModal);
+    const { page, response, showModal } = this.state;
     const { imageName } = this.props;
 
     return (
       <>
         <div>
           <ul>
+            {showModal && (
+              <Modal onClose={this.toggleModal}>
+                <h1>Hallo</h1>
+              </Modal>
+            )}
             <ImageGalleryItem
+              onClick={this.toggleModal}
               response={response}
               // largeImageURL={largeImageURL}
 
