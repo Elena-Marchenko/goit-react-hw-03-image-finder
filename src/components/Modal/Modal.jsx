@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import s from './Modal.module.css';
 
@@ -19,7 +20,6 @@ class Modal extends Component {
   };
 
   handleBackdropClick = e => {
-    console.log('click', e.currentTarget);
     if (e.currentTarget === e.target) {
       this.props.closeModal();
     }
@@ -28,7 +28,7 @@ class Modal extends Component {
   render() {
     return createPortal(
       <div className={s.overlay} onClick={this.handleBackdropClick}>
-        <div className={s.modal}>{this.props.children}</div>
+        <img src={this.props.url} className={s.modal} alt="" />
       </div>,
       modalRoot
     );
@@ -36,3 +36,7 @@ class Modal extends Component {
 }
 
 export default Modal;
+Modal.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  url: PropTypes.string.isRequired,
+};

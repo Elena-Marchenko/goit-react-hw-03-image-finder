@@ -1,9 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import s from './ImageGalleryItem.module.css';
 
 const imageGalleryItem = ({ response, openModal }) => {
-  // console.log(showModal);
-
   return response.map(res => {
     const { id, webformatURL, tags, largeImageURL } = res;
 
@@ -18,11 +17,12 @@ const imageGalleryItem = ({ response, openModal }) => {
       </li>
     );
   });
-
-  // return (
-  //   <li key={id}>
-  //     <img src={webformatURL} alt={tags} data-big_image={largeImageURL} />
-  //   </li>
-  // );
 };
 export default imageGalleryItem;
+
+imageGalleryItem.propTypes = {
+  id: PropTypes.string,
+  webformatURL: PropTypes.string,
+  tags: PropTypes.string,
+  largeImageURL: PropTypes.string,
+};
