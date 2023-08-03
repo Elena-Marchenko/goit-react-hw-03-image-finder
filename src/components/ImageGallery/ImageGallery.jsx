@@ -2,15 +2,17 @@ import { Component } from 'react';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Button from '../Button/Button';
 import apiIMG from '../../imgAPI';
-import Modal from '../Modal/Modal';
+// import Modal from '../Modal/Modal';
+import s from './ImageGallery.module.css';
+import Loaders from '../Loader/Loader';
 
 class ImageGallery extends Component {
   state = {
     response: [],
     page: 1,
+    loaderAreShow: false,
     error: null,
     status: 'idle',
-    showModal: false,
   };
 
   componentDidMount() {}
@@ -19,27 +21,22 @@ class ImageGallery extends Component {
     const { imageName } = this.props;
     const { page } = this.state;
 
-    setTimeout(() => {
-      if (prevProps.imageName !== imageName) {
-        this.setState({
-          response: [],
-        });
-        this.fetchImages();
-      }
-      if (prevState.page !== page) {
-        this.fetchImages();
-      }
-    }, 500);
+    if (prevProps.imageName !== imageName || prevState.page !== page) {
+      this.showLoader();
+
+      setTimeout(() => {
+        this.fetchImagesByName();
+        //scroll
+      }, 500);
+    }
   }
 
-  fetchImages = () => {
+  fetchImagesByName = () => {
     const { imageName } = this.props;
     const { page } = this.state;
     const errorMessage = `Not found ${imageName} `;
-
-    return apiIMG
+    apiIMG
       .fetchImg(imageName, page)
-
       .then(res => {
         if (res.hits.length === 0) {
           return Promise.reject(new Error(errorMessage));
@@ -51,16 +48,34 @@ class ImageGallery extends Component {
 
       .catch(error => alert(error.message))
       .finally(() => {
-        this.props.hideLoader();
+        this.hideLoader();
       });
   };
+
   //!!!!!!!!!!!!!!!!!!!!!!!!!
-  toggleModal = () => {
+  showLoader = () => {
     this.setState(() => ({
-      showModal: false ? true : false,
+      loaderAreShow: true,
     }));
   };
 
+  hideLoader = () => {
+    this.setState(() => ({
+      loaderAreShow: false,
+    }));
+  };
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  openModal = e => {
+    console.log('click nodeName', e.target.nodeName);
+    console.log('click', e.target.dataset.big_image);
+    if (e.target.nodeName === 'IMG') {
+      this.props.showModal();
+      // this.setState({ modalUrl: e.target.dataset.big_image });
+    }
+  };
+
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   increasePage = () => {
     this.setState(prevState => ({
       page: prevState.page + 1,
@@ -68,28 +83,26 @@ class ImageGallery extends Component {
   };
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   render() {
-    console.log(this.toggleModal);
-    const { page, response, showModal } = this.state;
-    const { imageName } = this.props;
+    const { page, response, loaderAreShow } = this.state;
+    const { imageName, openModal } = this.props;
 
     return (
       <>
         <div>
-          <ul>
-            {showModal && (
-              <Modal onClose={this.toggleModal}>
-                <h1>Hallo</h1>
+          <ul className={s.imageGallery}>
+            {/* {showModal && (
+              <Modal>
+                <img src="" alt="" />
               </Modal>
-            )}
+            )} */}
             <ImageGalleryItem
-              onClick={this.toggleModal}
+              openModal={openModal}
               response={response}
-              // largeImageURL={largeImageURL}
-
               imageName={imageName}
               page={page}
             />
           </ul>
+          {loaderAreShow && <Loaders />}
         </div>
 
         {response.length !== 0 && <Button onClick={this.increasePage} />}
