@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
-import Button from '../Button/Button';
+import ImageGalleryItem from '../ImageGalleryItem';
+import Button from '../Button';
 import apiIMG from '../../imgAPI';
-import Modal from '../Modal/Modal';
+import Modal from '../Modal';
 import s from './ImageGallery.module.css';
-import Loaders from '../Loader/Loader';
+import Loaders from '../Loader';
 
 class ImageGallery extends Component {
   state = {
@@ -22,40 +22,61 @@ class ImageGallery extends Component {
     const { imageName } = this.props;
     const { page } = this.state;
 
-    if (prevProps.imageName !== imageName || prevState.page !== page) {
-      this.toggleLoader();
+    if (prevProps.imageName !== imageName) {
+      this.showLoader();
+      this.setState({
+        response: [],
+      });
+      this.fetchImagesByName();
+    }
 
-      setTimeout(() => {
-        this.fetchImagesByName();
-      }, 500);
+    if (prevState.page !== page) {
+      this.showLoader();
+      this.fetchImagesByName();
+      this.scroll();
     }
   }
 
   fetchImagesByName = () => {
     const { imageName } = this.props;
     const { page } = this.state;
-    const errorMessage = `Not found ${imageName} `;
-    apiIMG
-      .fetchImg(imageName, page)
-      .then(res => {
-        if (res.hits.length === 0) {
-          return Promise.reject(new Error(errorMessage));
-        }
-        return this.setState(prevState => ({
-          response: [...prevState.response, ...res.hits],
-        }));
-      })
-      .catch(error => alert(error.message))
-      .finally(() => {
-        this.toggleLoader();
-      });
+    const errorMessage = `Not found '${imageName}' `;
+    setTimeout(() => {
+      apiIMG
+        .fetchImg(imageName, page)
+        .then(res => {
+          if (res.hits.length === 0) {
+            return Promise.reject(new Error(alert(errorMessage)));
+          }
+          return this.setState(prevState => ({
+            response: [...prevState.response, ...res.hits],
+          }));
+        })
+        .catch(error => this.setState({ error }))
+        .finally(() => {
+          this.hideLoader();
+        });
+    }, 1000);
+  };
+
+  scroll = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
   };
 
   //LOADER
-  toggleLoader = () => {
-    this.setState(({ loaderAreShow }) => ({
-      loaderAreShow: !loaderAreShow,
-    }));
+  showLoader = () => {
+    this.setState({
+      loaderAreShow: true,
+    });
+  };
+
+  hideLoader = () => {
+    this.setState({
+      loaderAreShow: false,
+    });
   };
 
   //MODAL
@@ -83,12 +104,14 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { page, response, loaderAreShow, modalUrl, isShowModal } = this.state;
+    const { page, response, loaderAreShow, modalUrl, isShowModal, error } =
+      this.state;
     const { imageName } = this.props;
 
     return (
       <>
         <div>
+          {error && <h1>{error.message}</h1>}
           <ul className={s.imageGallery}>
             <ImageGalleryItem
               openModal={this.openModal}
