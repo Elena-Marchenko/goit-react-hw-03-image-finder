@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import css from './App.module.css';
@@ -17,20 +17,9 @@ class App extends Component {
     const { imageName } = this.state;
     return (
       <div className={css.app}>
+        <Toaster />
         <Searchbar onSubmit={this.handleSearchFormSubmit} />
         <ImageGallery imageName={imageName} />
-        {/* <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        /> */}
       </div>
     );
   }
