@@ -16,6 +16,7 @@ class ImageGallery extends Component {
     error: null,
     modalUrl: '',
     isShowModal: false,
+    loadMoreBtn: false,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -24,6 +25,7 @@ class ImageGallery extends Component {
 
     if (prevProps.imageName !== imageName) {
       this.setState({
+        loadMoreBtn: false,
         page: 1,
         response: [],
       });
@@ -52,9 +54,10 @@ class ImageGallery extends Component {
         }
         return this.setState(prevState => ({
           response: [...prevState.response, ...res.hits],
+          loadMoreBtn: this.state.page < Math.ceil(res.totalHits / 12),
         }));
       })
-      .catch(error => this.setState({ error }))
+      .catch(error => this.setState({ error, loadMoreBtn: false }))
       .finally(() => {
         this.hideLoader();
       });
@@ -98,8 +101,16 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { page, response, loaderAreShow, modalUrl, isShowModal } = this.state;
+    const {
+      page,
+      response,
+      loaderAreShow,
+      modalUrl,
+      isShowModal,
+      loadMoreBtn,
+    } = this.state;
     const { imageName } = this.props;
+    console.log('loadMoreBtn:', loadMoreBtn);
 
     return (
       <>
@@ -119,7 +130,7 @@ class ImageGallery extends Component {
           {loaderAreShow && <Loaders />}
         </div>
 
-        {response.length !== 0 && <Button onClick={this.increasePage} />}
+        {loadMoreBtn && <Button onClick={this.increasePage} />}
       </>
     );
   }
