@@ -24,20 +24,22 @@ class ImageGallery extends Component {
     const { page } = this.state;
 
     if (prevProps.imageName !== imageName) {
+      this.showLoader();
       this.setState({
         loadMoreBtn: false,
         page: 1,
         response: [],
       });
       setTimeout(() => {
-        this.showLoader();
         this.fetchImagesByName();
-      }, 1000);
+      }, 500);
     }
 
     if (prevState.page < page) {
       this.showLoader();
-      this.fetchImagesByName();
+      setTimeout(() => {
+        this.fetchImagesByName();
+      }, 500);
     }
   }
 
