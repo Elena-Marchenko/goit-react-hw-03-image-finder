@@ -4,6 +4,7 @@ import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import css from './App.module.css';
 import apiIMG from '../imgAPI';
+import PropTypes from 'prop-types';
 
 class App extends Component {
   state = {
@@ -87,10 +88,8 @@ class App extends Component {
   };
 
   render() {
-    const { page, response, loaderAreShow, modalUrl, loadMoreBtn, imageName } =
+    const { page, response, loaderAreShow, loadMoreBtn, imageName } =
       this.state;
-
-    console.log('loadMoreBtn:', loadMoreBtn);
 
     return (
       <div className={css.app}>
@@ -101,7 +100,6 @@ class App extends Component {
           response={response}
           imageName={imageName}
           page={page}
-          modalUrl={modalUrl}
           increasePage={this.increasePage}
           loadMoreBtn={loadMoreBtn}
         />
@@ -111,3 +109,8 @@ class App extends Component {
 }
 
 export default App;
+App.propTypes = {
+  increasePage: PropTypes.func,
+  page: PropTypes.number,
+  imageName: PropTypes.string,
+};

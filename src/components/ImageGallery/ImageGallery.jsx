@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
-
-import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem';
 import Button from '../Button';
-// import apiIMG from '../../imgAPI';
 import Modal from '../Modal';
 import s from './ImageGallery.module.css';
 import Loaders from '../Loader';
+import PropTypes from 'prop-types';
 
 class ImageGallery extends Component {
   state = {
@@ -69,7 +67,7 @@ class ImageGallery extends Component {
 export default ImageGallery;
 
 ImageGallery.propTypes = {
-  openModal: PropTypes.func,
+  increasePage: PropTypes.func,
   page: PropTypes.number,
   imageName: PropTypes.string.isRequired,
 };

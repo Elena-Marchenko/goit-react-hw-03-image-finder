@@ -21,6 +21,7 @@ const imageGalleryItem = ({ response, openModal }) => {
 export default imageGalleryItem;
 
 imageGalleryItem.propTypes = {
+  openModal: PropTypes.func,
   id: PropTypes.string,
   webformatURL: PropTypes.string,
   tags: PropTypes.string,
